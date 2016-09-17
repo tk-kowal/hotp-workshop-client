@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+
+require 'net/http'
+require 'json'
+
+class Client
+  def self.sign_in
+    print "Username: "
+    user = gets.chomp
+    print "Password: "
+    pass = gets.chomp
+    print "2FA Code: "
+    code = gets.chomp
+
+    uri = URI.parse("http://54.69.5.141/auth")
+
+    req = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
+    req.body = AuthRequest.new(user, pass, code).to_json
+
+    http = Net::HTTP.new(uri.host, uri.port)
+
+    resp = http.request(req)
+
+    puts resp.body
+  end
+
+  private
+
+  class AuthRequest
+    attr_reader :user, :pass, :code
+    def initialize(user, pass, code)
+      @user = user
+      @pass = pass
+      @code = code
+    end
+
+    def to_json
+      { 'user' => @user, 'pass' => @pass, 'otp' => @code }.to_json
+    end
+  end
+end
+
+while true
+  Client.sign_in 
+end

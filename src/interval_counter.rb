@@ -1,0 +1,3 @@
+class IntervalCounter
+
+end
